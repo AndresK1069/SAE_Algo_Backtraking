@@ -16,7 +16,7 @@ public class Graph {
         sb.append("[Graph]\n");
         for(Integer i : this.chListAdjacence.keySet()) {
             chListAdjacence.get(i);
-            sb.append(i + " : " + this.chListAdjacence.get(i) + "\n");
+            sb.append(i).append(" : ").append(this.chListAdjacence.get(i)).append("\n");
         }
         return sb.toString();
     }

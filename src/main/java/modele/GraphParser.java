@@ -19,8 +19,8 @@ public class GraphParser {
             lineCount++;
             ArrayList<Integer> neighbours = new ArrayList<>();
 
-            for(int i = 0; i < tokens.length; i++){
-                neighbours.add(Integer.parseInt(tokens[i]));
+            for (String token : tokens) {
+                neighbours.add(Integer.parseInt(token));
             }
             graph.put(lineCount, neighbours);
         }
