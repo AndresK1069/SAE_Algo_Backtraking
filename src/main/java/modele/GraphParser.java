@@ -23,10 +23,6 @@ public class GraphParser {
                 neighbours.add(Integer.parseInt(tokens[i]));
             }
             graph.put(lineCount, neighbours);
-
-            /*
-            System.out.printf("%s\n", line);
-            System.out.println(lineCount);*/
         }
 
 
