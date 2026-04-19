@@ -6,11 +6,17 @@ public class GraphExplorationLogger {
     private final ArrayList<Integer> chVisitedNodes;
     private final ArrayList<Integer> chHamiltonienPath;
     private final long chExplorationTime;
+    private final Graph chGraph;
 
-    public GraphExplorationLogger(ArrayList<Integer> parVisitedNodes , ArrayList<Integer> parHamiltonienPath, long parExplorationTime) {
+    public GraphExplorationLogger(Graph parGraph,ArrayList<Integer> parVisitedNodes , ArrayList<Integer> parHamiltonienPath, long parExplorationTime) {
+        this.chGraph = parGraph;
         this.chVisitedNodes = parVisitedNodes;
         this.chHamiltonienPath = parHamiltonienPath;
         this.chExplorationTime = parExplorationTime;
+    }
+
+    public Graph getChGraph() {
+        return chGraph;
     }
 
     public ArrayList<Integer> getChVisitedNodes() {
