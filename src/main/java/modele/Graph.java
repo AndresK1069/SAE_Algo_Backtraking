@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Graph {
-    private HashMap<Integer, ArrayList<Integer>> chListAdjacence;
+    private final HashMap<Integer, ArrayList<Integer>> chListAdjacence;
 
     public Graph(HashMap<Integer, ArrayList<Integer>> parListAdjacence) {
         this.chListAdjacence = parListAdjacence;
