@@ -7,6 +7,14 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class GraphParser {
+
+    /**
+     *  La fonction prend un Fichier en entre et renvoie un Objet de l'instance Graph
+     *  chaque ligne correspond a un sommet de 0 a n et le contenu de la ligne represente les voisins separer par un espace
+     * @param file fichier que l'on veut parser
+     * @return Graph
+     * @throws FileNotFoundException envoie une execption si le fichier n'est pas trouver
+     */
     public static Graph parseGraph(File file) throws FileNotFoundException {
         Scanner scanner = new Scanner(file);
         int lineCount= -1;
