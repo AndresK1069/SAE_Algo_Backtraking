@@ -1,10 +1,7 @@
 package modele.Client;
 
-import modele.Graph;
 import modele.GraphParser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ClientGraphParser {
@@ -12,6 +9,6 @@ public class ClientGraphParser {
         GraphParser graphParser = new GraphParser();
         graphParser.preloadGraph("data/");
 
-        System.out.println(graphParser.getGraphs().get(0));
+        System.out.println(graphParser.getGraphs().getFirst());
     }
 }

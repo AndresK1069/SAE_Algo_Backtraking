@@ -41,7 +41,7 @@ public class GraphParser {
         }
     }
 
-    public void preloadGraph(String filePath) throws IOException {
+    public void preloadGraph(String filePath) {
         try {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(filePath));
             for (Path path : ds) {
