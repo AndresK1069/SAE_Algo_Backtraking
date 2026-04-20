@@ -22,25 +22,23 @@ public class GraphParser {
      * @throws FileNotFoundException envoie une execption si le fichier n'est pas trouver
      */
     public static Graph parseGraph(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file);
-        int lineCount= -1;
+        try (Scanner scanner = new Scanner(file)) {
+            int lineCount = -1;
+            HashMap<Integer, ArrayList<Integer>> graph = new HashMap<>();
 
-        HashMap<Integer, ArrayList<Integer>> graph = new HashMap<>();
-
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] tokens = line.split(" ");
-            lineCount++;
-            ArrayList<Integer> neighbours = new ArrayList<>();
-
-            for (String token : tokens) {
-                neighbours.add(Integer.parseInt(token));
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.isBlank()) continue;
+                String[] tokens = line.split(" ");
+                lineCount++;
+                ArrayList<Integer> neighbours = new ArrayList<>();
+                for (String token : tokens) {
+                    neighbours.add(Integer.parseInt(token));
+                }
+                graph.put(lineCount, neighbours);
             }
-            graph.put(lineCount, neighbours);
+            return new Graph(graph);
         }
-
-
-        return new Graph(graph);
     }
 
     public void preloadGraph(String filePath) throws IOException {
