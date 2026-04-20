@@ -59,7 +59,7 @@ class GraphParserTest {
     }
 
     @Test
-    void preloadGraph_emptyDirectory_loadsNoGraphs() throws IOException {
+    void preloadGraph_emptyDirectory_loadsNoGraphs() {
         graphParser.preloadGraph(tempDir.toString());
         assertTrue(graphParser.getGraphs().isEmpty());
     }
