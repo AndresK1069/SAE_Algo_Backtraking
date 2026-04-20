@@ -1,7 +1,7 @@
 # Todo
 
 ## BackEnd
-- [ ] Preload graph
+- [x] Preload graph
 - [ ] Write Junit Test
 - [ ] Write Graph Registery
 - [ ] add info to graph like taille , degre , Diametre etc 
