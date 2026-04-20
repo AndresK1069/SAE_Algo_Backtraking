@@ -2,10 +2,9 @@ package modele.Client;
 
 import modele.GraphParser;
 
-import java.io.IOException;
 
 public class ClientGraphParser {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         GraphParser graphParser = new GraphParser();
         graphParser.preloadGraph("data/");
 
