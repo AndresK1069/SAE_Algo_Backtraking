@@ -2,11 +2,17 @@ package modele;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class GraphParser {
+    private static ArrayList<Graph> chGraphs = new ArrayList<>();
 
     /**
      *  La fonction prend un Fichier en entre et renvoie un Objet de l'instance Graph
@@ -35,5 +41,23 @@ public class GraphParser {
 
 
         return new Graph(graph);
+    }
+
+    public void preloadGraph(String filePath) throws IOException {
+        try {
+            DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(filePath));
+            for (Path path : ds) {
+                File file = new File(path.toString());
+                Graph tmpGraph = parseGraph(file);
+                chGraphs.add(tmpGraph);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public ArrayList<Graph> getGraphs() {
+        return chGraphs;
     }
 }

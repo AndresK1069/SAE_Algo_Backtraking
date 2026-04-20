@@ -5,11 +5,13 @@ import modele.GraphParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ClientGraphParser {
-    public static void main(String[] args) throws FileNotFoundException {
-        File file = new File("data/graph1.txt");
-        Graph graph = GraphParser.parseGraph(file);
-        System.out.println(graph);
+    public static void main(String[] args) throws IOException {
+        GraphParser graphParser = new GraphParser();
+        graphParser.preloadGraph("data/");
+
+        System.out.println(graphParser.getGraphs().get(0));
     }
 }
