@@ -41,6 +41,7 @@ public class GraphVisualizerView extends Region {
     private final Slider chSlider = new Slider();
     private final Label chStepLabel = new Label("Step: 0");
     private final VBox chRoot;
+    private ArrayList<Integer> chDisplayList = new ArrayList<>();
 
     public GraphVisualizerView() {
         chCanvas.widthProperty().bind(widthProperty());
@@ -78,8 +79,16 @@ public class GraphVisualizerView extends Region {
 
     public void setLogger(GraphExplorationLogger logger) {
         this.chLogger = logger;
-        chSlider.setMax(logger.getChHamiltonienPath().size());
+        // Default: show full visited (exploration view)
+        setDisplayList(logger.getChVisitedNodes());
+    }
+
+    public void setDisplayList(ArrayList<Integer> list) {
+        // Filter out negative backtrack markers for slider max
+        long positiveCount = list.stream().filter(n -> n >= 0).count();
+        chSlider.setMax(list.size());
         chSlider.setValue(0);
+        this.chDisplayList = list; // ← new field
         recomputeLayout();
     }
 
@@ -103,57 +112,68 @@ public class GraphVisualizerView extends Region {
         GraphicsContext gc = chCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, chCanvas.getWidth(), chCanvas.getHeight());
 
-        ArrayList<Integer> path    = chLogger.getChHamiltonienPath();
-        ArrayList<Integer> visited = chLogger.getChVisitedNodes();
         int step = chPathStep.get();
+        List<Integer> activeSlice = chDisplayList.subList(0, Math.min(step, chDisplayList.size()));
 
-        // Build the highlighted sub-path up to current step
-        List<Integer> activePath = path.subList(0, Math.min(step, path.size()));
-        Set<Integer>  activeSet  = new HashSet<>(activePath);
-        Integer       currentNode = activePath.isEmpty() ? null : activePath.get(activePath.size() - 1);
+        // Decode the slice — negatives are backtrack markers
+        Set<Integer> forwardNodes   = new HashSet<>();
+        Set<Integer> backtrackNodes = new HashSet<>();
+        Integer currentNode = null;
 
-        // 1) Draw edges
+        for (int entry : activeSlice) {
+            if (entry >= 0) {
+                forwardNodes.add(entry);
+                currentNode = entry;
+            } else {
+                int backtracked = -entry - 1;
+                backtrackNodes.add(backtracked);
+                currentNode = backtracked;
+            }
+        }
+
+        Set<Integer> finalPathSet = new HashSet<>(chLogger.getChHamiltonienPath());
+
+        // Draw edges
         Map<Integer, ArrayList<Integer>> adj = chLogger.getChGraph().getChListAdjacence();
         for (Map.Entry<Integer, ArrayList<Integer>> entry : adj.entrySet()) {
             int from = entry.getKey();
             for (int to : entry.getValue()) {
-                if (from < to) { // avoid drawing twice for undirected
-                    drawEdge(gc, from, to, activePath);
-                }
+                if (from < to) drawEdge(gc, from, to, forwardNodes, finalPathSet);
             }
         }
 
-        // 2) Draw nodes
+        // Draw nodes
         for (int node : chPositions.keySet()) {
             Color color;
-            if (currentNode != null && currentNode.equals(node))       color = COLOR_CURRENT_NODE;
-            else if (activeSet.contains(node)) color = COLOR_PATH_NODE;
-            else if (visited.contains(node))   color = COLOR_VISITED_NODE;
-            else                               color = COLOR_DEFAULT_NODE;
-
+            if (Integer.valueOf(node).equals(currentNode)) {
+                color = COLOR_CURRENT_NODE;
+            } else if (backtrackNodes.contains(node) && !finalPathSet.contains(node)) {
+                color = COLOR_VISITED_NODE;
+            } else if (forwardNodes.contains(node) && finalPathSet.contains(node)) {
+                color = COLOR_PATH_NODE;
+            } else if (forwardNodes.contains(node)) {
+                color = Color.ORCHID;
+            } else {
+                color = COLOR_DEFAULT_NODE;
+            }
             drawNode(gc, node, color);
         }
     }
 
-    private void drawEdge(GraphicsContext gc, int from, int to, List<Integer> activePath) {
+    private void drawEdge(GraphicsContext gc, int from, int to,
+                          Set<Integer> forwardNodes, Set<Integer> finalPath) {
         double[] p1 = chPositions.get(from);
         double[] p2 = chPositions.get(to);
         if (p1 == null || p2 == null) return;
 
-        // Check if this edge is part of the active path
-        boolean isPathEdge = false;
-        for (int i = 0; i < activePath.size() - 1; i++) {
-            if ((activePath.get(i).equals(from) && activePath.get(i+1).equals(to)) ||
-                    (activePath.get(i).equals(to)   && activePath.get(i+1).equals(from))) {
-                isPathEdge = true;
-                break;
-            }
-        }
+        boolean isPathEdge = forwardNodes.contains(from) && forwardNodes.contains(to)
+                && finalPath.contains(from)    && finalPath.contains(to);
 
         gc.setStroke(isPathEdge ? COLOR_PATH_EDGE : COLOR_DEFAULT_EDGE);
         gc.setLineWidth(isPathEdge ? 3 : 1);
         gc.strokeLine(p1[0], p1[1], p2[0], p2[1]);
     }
+
 
     private void drawNode(GraphicsContext gc, int node, Color color) {
         double[] pos = chPositions.get(node);
