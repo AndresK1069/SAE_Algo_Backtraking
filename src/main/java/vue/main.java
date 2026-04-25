@@ -5,9 +5,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import modele.Graph;
 import modele.GraphExplorationLogger;
+import modele.GraphParser;
+import modele.registry.AlgorithmRegistry;
+import modele.registry.IPathAlgorithm;
 import vue.GraphVisualizer.GraphVisualizerView;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class main extends Application {
 
@@ -15,39 +19,48 @@ public class main extends Application {
     public void start(Stage stage) throws Exception {
         //todo Remove this
         // --- Build a test graph ---
-        Graph graph = new Graph();
-        graph.addEdge(0, 1);
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 3);
-        graph.addEdge(3, 4);
-        graph.addEdge(4, 0);
-        graph.addEdge(1, 3);
-        graph.addEdge(0, 2);
+        Graph g = new Graph();
 
-        ArrayList<Integer> visitedNodes = new ArrayList<>();
-        visitedNodes.add(0);
-        visitedNodes.add(1);
-        visitedNodes.add(3);
-        visitedNodes.add(2);
-        visitedNodes.add(4);
+        g.addEdge(0, 1);
+        g.addEdge(1, 2);
+        g.addEdge(2, 3);
+        g.addEdge(3, 1);
 
-        ArrayList<Integer> hamiltonianPath = new ArrayList<>();
-        hamiltonianPath.add(0);
-        hamiltonianPath.add(1);
-        hamiltonianPath.add(2);
-        hamiltonianPath.add(3);
-        hamiltonianPath.add(4);
+        g.addEdge(0, 4);
+        g.addEdge(4, 5);
+        g.addEdge(5, 6);
+        g.addEdge(6, 7);
+        g.addEdge(7, 8);
+        g.addEdge(8, 9);
 
-        GraphExplorationLogger logger = new GraphExplorationLogger(
-                graph,
-                visitedNodes,
-                hamiltonianPath,
-                42L
-        );
+        g.addEdge(5, 2);
+        g.addEdge(6, 4);
+        g.addEdge(7, 5);
+
+        AlgorithmRegistry registry = new AlgorithmRegistry();
+
+        GraphParser graphParser = new GraphParser();
+        graphParser.preloadGraph("data/");
+
+        Optional<IPathAlgorithm> algo = registry.getAlgorithm("backtracking");
+
+        //GraphExplorationLogger log = algo.get().compute(graphParser.getGraphs().get(4));
+        GraphExplorationLogger log = algo.get().compute(g);
+        if (log == null) {
+            System.out.println("No graph with a Hamiltonian path found!");
+            return;
+        }
+
+        System.out.println("Path:         " + log.getChHamiltonienPath());
+        System.out.println("Path size:    " + log.getChHamiltonienPath().size());
+        System.out.println("Visited:      " + log.getChVisitedNodes());
+        System.out.println("Visited size: " + log.getChVisitedNodes().size());
+        System.out.println("Time (ms):    " + log.getChExplorationTime());
 
         GraphVisualizerView visualizer = new GraphVisualizerView();
         visualizer.setPrefSize(700, 600);
-        visualizer.setLogger(logger);
+        visualizer.setLogger(log);
+        //visualizer.setDisplayList(log.getChHamiltonienPath()); // ← swap to path-only view
 
         Scene scene = new Scene(visualizer, 700, 600);
         stage.setTitle("Graph Visualizer — Test");
