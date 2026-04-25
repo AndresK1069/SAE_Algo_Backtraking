@@ -2,16 +2,17 @@ package modele;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Graph {
-    private final HashMap<Integer, ArrayList<Integer>> chListAdjacence;
+    private final LinkedHashMap<Integer, ArrayList<Integer>> chListAdjacence;
 
-    public Graph(HashMap<Integer, ArrayList<Integer>> parListAdjacence) {
+    public Graph(LinkedHashMap<Integer, ArrayList<Integer>> parListAdjacence) {
         this.chListAdjacence = parListAdjacence;
     }
 
     public Graph() {
-        this.chListAdjacence = new HashMap<>();
+        this.chListAdjacence = new LinkedHashMap<>();
     }
 
 
