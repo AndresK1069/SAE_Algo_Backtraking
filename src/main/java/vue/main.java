@@ -10,7 +10,6 @@ import modele.registry.AlgorithmRegistry;
 import modele.registry.IPathAlgorithm;
 import vue.GraphVisualizer.GraphVisualizerView;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class main extends Application {
