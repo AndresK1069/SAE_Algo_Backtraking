@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 public class GraphParser {
@@ -24,7 +25,7 @@ public class GraphParser {
     public static Graph parseGraph(File file) throws FileNotFoundException {
         try (Scanner scanner = new Scanner(file)) {
             int lineCount = -1;
-            HashMap<Integer, ArrayList<Integer>> graph = new HashMap<>();
+            LinkedHashMap<Integer, ArrayList<Integer>> graph = new LinkedHashMap<>();
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -41,18 +42,38 @@ public class GraphParser {
         }
     }
 
+    public static Graph parseEdgeList(File file) throws FileNotFoundException {
+        try (Scanner scanner = new Scanner(file)) {
+
+            String firstLine = scanner.nextLine().trim();
+            Graph graph = new Graph();
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isBlank()) continue;
+
+                String[] tokens = line.split(" ");
+                int from = Integer.parseInt(tokens[0]);
+                int to   = Integer.parseInt(tokens[1]);
+
+                graph.addEdge(from, to);
+            }
+
+            return graph;
+        }
+    }
+
     public void preloadGraph(String filePath) {
         try {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(filePath));
             for (Path path : ds) {
                 File file = new File(path.toString());
-                Graph tmpGraph = parseGraph(file);
+                Graph tmpGraph = parseEdgeList(file);
                 chGraphs.add(tmpGraph);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public ArrayList<Graph> getGraphs() {
