@@ -45,7 +45,7 @@ public class GraphParser {
     public static Graph parseEdgeList(File file) throws FileNotFoundException {
         try (Scanner scanner = new Scanner(file)) {
 
-            String firstLine = scanner.nextLine().trim();
+
             Graph graph = new Graph();
 
             while (scanner.hasNextLine()) {
