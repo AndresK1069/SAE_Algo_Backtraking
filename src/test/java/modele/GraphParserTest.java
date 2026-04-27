@@ -52,8 +52,8 @@ class GraphParserTest {
 
     @Test
     void preloadGraph_directoryWithFiles_loadsAllGraphs() throws IOException {
-        createTempGraphFile("1 2\n0\n0", "graph1.txt");
-        createTempGraphFile("1\n0",      "graph2.txt");
+        createTempGraphFile("1 2\n0\n0", "graph0.txt");
+        createTempGraphFile("1\n0",      "graph1.txt");
         graphParser.preloadGraph(tempDir.toString());
         assertEquals(2, graphParser.getGraphs().size());
     }
