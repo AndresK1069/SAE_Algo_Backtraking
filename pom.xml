@@ -46,7 +46,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>vue.main</mainClass>
+                    <mainClass>main</mainClass>
                     <options>
                         <option>--add-opens</option>
                         <option>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</option>
