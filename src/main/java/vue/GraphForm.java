@@ -2,8 +2,6 @@ package vue;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -11,11 +9,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import modele.Graph;
-import modele.registry.IPathAlgorithm;
 
 public class GraphForm extends GridPane {
-    GridPane gridPane = new GridPane();
     //TODO ajouter accessibilité
     public GraphForm() {
 
@@ -31,17 +26,21 @@ public class GraphForm extends GridPane {
         Label graphLabel = new Label("Graph :");
         this.add(graphLabel, 0, 1);
 
-        ComboBox<Graph> graphComboBox = new ComboBox<>();
+        ComboBox<Integer> graphComboBox = new ComboBox<>();
+        graphComboBox.setId("listGraphDisponible");
         this.add(graphComboBox, 1, 1);
 
         Label algo = new Label("Algorithme :");
         this.add(algo, 0, 2);
 
 
-        ComboBox<IPathAlgorithm> algoClas = new ComboBox<>();
-        this.add(algoClas, 1, 2);
+        ComboBox<String> algoClass = new ComboBox<>();
+        algoClass.setId("listAlgorithm");
+        this.add(algoClass, 1, 2);
+
 
         Button btn = new Button("Submit");
+        btn.setId("btnSubmit");
         this.add(btn, 0, 3);
     }
 

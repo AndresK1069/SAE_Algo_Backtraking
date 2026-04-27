@@ -87,11 +87,11 @@ public class AlgorithmRegistry {
         }
     }
 
-    public List<IPathAlgorithm> getChAlgorithms() {
+    public List<IPathAlgorithm> getChAlgorithmsValues() {
         return new ArrayList<>(chAlgorithms.values());
     }
 
-    public Optional<IPathAlgorithm> getAlgorithm(String id) {
+    public Optional<IPathAlgorithm> getAlgorithmById(String id) {
         return Optional.ofNullable(chAlgorithms.get(id));
     }
 }

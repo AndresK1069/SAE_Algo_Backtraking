@@ -10,7 +10,7 @@ public class ClientAlgorithmRegistry {
         AlgorithmRegistry registry = new AlgorithmRegistry();
 
         System.out.println("Available algorithms:");
-        for (IPathAlgorithm algo : registry.getChAlgorithms()) {
+        for (IPathAlgorithm algo : registry.getChAlgorithmsValues()) {
             System.out.println(algo.getId() + " -> " + algo.getDisplayName());
         }
     }
