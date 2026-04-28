@@ -42,6 +42,7 @@ public class AlgorithmRegistry {
         }
     }
 
+    //FIXME change src/main/java hardCoded path it fails once compiled
     private static void writeAlgoPath() throws IOException {
 
         // File prep
