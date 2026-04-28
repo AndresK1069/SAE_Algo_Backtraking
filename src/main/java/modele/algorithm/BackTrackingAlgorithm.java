@@ -5,6 +5,7 @@ import modele.GraphExplorationLogger;
 import modele.registry.IPathAlgorithm;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class BackTrackingAlgorithm implements IPathAlgorithm {
     @Override
@@ -24,7 +25,7 @@ public class BackTrackingAlgorithm implements IPathAlgorithm {
 
     @Override
     public GraphExplorationLogger compute(Graph input) {
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         int n = input.getChListAdjacence().size();
 
@@ -36,8 +37,9 @@ public class BackTrackingAlgorithm implements IPathAlgorithm {
 
         hamiltonianBackTrack(this.getStartingNode(), n, path, visited, input);
 
-        long duration = System.currentTimeMillis() - startTime;
-        return new GraphExplorationLogger(input, visited, path, duration);
+        long duration = System.nanoTime() - startTime;
+        double ms = duration / 1_000_000.0;
+        return new GraphExplorationLogger(input, visited, path, ms);
     }
 
     private boolean hamiltonianBackTrack(int current, int n, ArrayList<Integer> path,

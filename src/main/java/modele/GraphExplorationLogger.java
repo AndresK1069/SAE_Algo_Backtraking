@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class GraphExplorationLogger {
     private final ArrayList<Integer> chVisitedNodes;
     private final ArrayList<Integer> chHamiltonienPath;
-    private final long chExplorationTime;
+    private final double chExplorationTime;
     private final Graph chGraph;
 
-    public GraphExplorationLogger(Graph parGraph,ArrayList<Integer> parVisitedNodes , ArrayList<Integer> parHamiltonienPath, long parExplorationTime) {
+    public GraphExplorationLogger(Graph parGraph,ArrayList<Integer> parVisitedNodes , ArrayList<Integer> parHamiltonienPath, double parExplorationTime) {
         this.chGraph = parGraph;
         this.chVisitedNodes = parVisitedNodes;
         this.chHamiltonienPath = parHamiltonienPath;
@@ -27,7 +27,7 @@ public class GraphExplorationLogger {
         return chHamiltonienPath;
     }
 
-    public long getChExplorationTime() {
+    public double getChExplorationTime() {
         return chExplorationTime;
     }
 
@@ -38,7 +38,7 @@ public class GraphExplorationLogger {
                         "Path size:    %d%n" +
                         "Visited:      %s%n" +
                         "Visited size: %d%n" +
-                        "Time (ms):    %d%n" +
+                        "Time (ms):    %.3f%n" +
                         "Graph:        %s",
                 chHamiltonienPath,
                 chHamiltonienPath.size(),
