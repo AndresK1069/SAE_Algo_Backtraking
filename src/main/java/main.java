@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 import vue.VboxRoot;
 
 public class main extends Application {
-
     @Override
     public void start(Stage stage) throws Exception {
         Controller controller = new Controller();
