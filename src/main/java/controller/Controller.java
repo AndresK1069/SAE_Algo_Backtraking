@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class Controller implements EventHandler {
+public class Controller implements EventHandler<Event> {
     private AlgorithmRegistry chAlgorithmRegistry;
     private GraphParser chGraphParser;
     private ComboBox<String>  chAlgorithmComboBox;
@@ -27,8 +27,7 @@ public class Controller implements EventHandler {
     @Override
     public void handle(Event event) {
 
-        if (event.getSource() instanceof Button) {
-            Button btn = (Button) event.getSource();
+        if (event.getSource() instanceof Button btn) {
             switch (btn.getId()) {
                 case "btnSubmit":
                     this.submitAction();
