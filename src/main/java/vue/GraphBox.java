@@ -6,24 +6,31 @@ import modele.GraphExplorationLogger;
 import vue.GraphVisualizer.GraphVisualizerView;
 
 public class GraphBox extends VBox {
-    GraphVisualizerView visualizerHamiltonPath = new GraphVisualizerView();
-    GraphVisualizerView visualizerVisitedPath = new GraphVisualizerView();
+    private GraphVisualizerView visualizerHamiltonPath = new GraphVisualizerView();
+    private GraphVisualizerView visualizerVisitedPath = new GraphVisualizerView();
+
+    private Label hamiltonLabel = new Label("chemin de hamilton :");
+    private Label visitedLabel = new Label("Sommais Visite :");
+
+    public GraphBox() {
+        initUI();
+    }
 
     public GraphBox(GraphExplorationLogger graphExplorationLogger) {
+        initUI();
+        setLogger(graphExplorationLogger);
+    }
+
+    private void initUI() {
         visualizerHamiltonPath.setPrefSize(500, 500);
         visualizerVisitedPath.setPrefSize(500, 500);
 
-        visualizerHamiltonPath.setLogger(graphExplorationLogger);
-        visualizerHamiltonPath.setDisplayList(graphExplorationLogger.getChHamiltonienPath());
-        visualizerVisitedPath.setLogger(graphExplorationLogger);
-
-        Label hamiltonLabel = new Label("chemin de hamilton :");
-        Label visitedLabel = new Label("Sommais Visite :");
-
-        this.getChildren().addAll(hamiltonLabel,visualizerHamiltonPath, visitedLabel,visualizerVisitedPath);
+        this.getChildren().addAll(hamiltonLabel, visualizerHamiltonPath, visitedLabel, visualizerVisitedPath);
     }
 
-    public GraphBox(){
-
+    public void setLogger(GraphExplorationLogger graphExplorationLogger) {
+        visualizerHamiltonPath.setLogger(graphExplorationLogger);
+        visualizerVisitedPath.setLogger(graphExplorationLogger);
+        visualizerHamiltonPath.setDisplayList(graphExplorationLogger.getChHamiltonienPath());
     }
 }

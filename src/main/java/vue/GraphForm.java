@@ -1,5 +1,8 @@
 package vue;
 
+import controller.Controller;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -37,12 +40,13 @@ public class GraphForm extends GridPane {
         ComboBox<String> algoClass = new ComboBox<>();
         algoClass.setId("listAlgorithm");
         this.add(algoClass, 1, 2);
-
-
-        Button btn = new Button("Submit");
-        btn.setId("btnSubmit");
-        this.add(btn, 0, 3);
     }
 
+    public void setButtons(EventHandler<ActionEvent> onSubmit){
+        Button btn = new Button("Submit");
+        btn.setId("btnSubmit");
+        btn.setOnAction(onSubmit);
+        this.add(btn, 0, 3);
+    }
 
 }

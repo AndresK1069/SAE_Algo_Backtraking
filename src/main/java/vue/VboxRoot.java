@@ -1,16 +1,32 @@
 package vue;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import modele.GraphExplorationLogger;
 
 public class VboxRoot extends VBox {
-    public VboxRoot(GraphExplorationLogger logger) {
-        TextArea ta = new TextArea();
-        ta.setEditable(false);
+    private HboxContent chHboxContent;
+    private TextArea chTextArea = new TextArea();
 
-        HboxContent hb = new HboxContent(logger);
+    public VboxRoot(EventHandler<ActionEvent> onSubmit) {
+        this.initHbox(onSubmit);
+    }
 
-        this.getChildren().addAll(hb,ta);
+    private void initHbox(EventHandler<ActionEvent> onSubmit) {
+        chHboxContent = new HboxContent(onSubmit);
+        chTextArea.setEditable(false);
+        chTextArea.setPrefHeight(500);
+        this.getChildren().addAll(chHboxContent, chTextArea);
+    }
+
+    public void setTextArea(String text) {
+        chTextArea.clear();
+        chTextArea.setText(text);
+    }
+
+    public void setLogger(GraphExplorationLogger logger) {
+        chHboxContent.setGraphBox(logger);
     }
 }
