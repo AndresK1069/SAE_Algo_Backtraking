@@ -30,4 +30,23 @@ public class GraphExplorationLogger {
     public long getChExplorationTime() {
         return chExplorationTime;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Path:         %s%n" +
+                        "Path size:    %d%n" +
+                        "Visited:      %s%n" +
+                        "Visited size: %d%n" +
+                        "Time (ms):    %d%n" +
+                        "Graph:        %s",
+                chHamiltonienPath,
+                chHamiltonienPath.size(),
+                chVisitedNodes,
+                chVisitedNodes.size(),
+                chExplorationTime,
+                chGraph.toString().replace("\n", " | ")
+        );
+    }
+
 }
