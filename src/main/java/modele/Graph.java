@@ -1,6 +1,7 @@
 package modele;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -28,10 +29,15 @@ public class Graph {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[Graph]\n");
-        for(Integer i : this.chListAdjacence.keySet()) {
-            chListAdjacence.get(i);
-            sb.append(i).append(" : ").append(this.chListAdjacence.get(i)).append("\n");
-        }
+
+        chListAdjacence.keySet().stream()
+                .sorted()
+                .forEach(key -> {
+                    ArrayList<Integer> neighbors = new ArrayList<>(chListAdjacence.get(key));
+                    Collections.sort(neighbors);
+                    sb.append(key).append(" : ").append(neighbors).append("\n");
+                });
+
         return sb.toString();
     }
 }
