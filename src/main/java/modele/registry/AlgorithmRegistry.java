@@ -3,25 +3,115 @@ package modele.registry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class AlgorithmRegistry {
-    private final Map<String, IPathAlgorithm> chAlgorithms =new HashMap<>();
-    private static final String FILE_NAME = "modele.registry.IPathAlgorithm";
-    private static final String PATH_DIC = "modele.algorithm.";
-    private static final String WRITING_DIC = "target/classes/META-INF/services/";
-    private static final String SCANNING_DIC = "src/main/java/modele/algorithm";
+    private final Map<String, IPathAlgorithm> chAlgorithms = new HashMap<>();
+
+    private static final String FILE_NAME        = "modele.registry.IPathAlgorithm";
+    private static final String ALGORITHM_PKG    = "modele.algorithm";
+    private static final String ALGORITHM_PKG_PATH = "modele/algorithm";
+    private static final String SERVICES_DIR     = "META-INF/services/";
 
     public AlgorithmRegistry() throws IOException {
         writeAlgoPath();
         loadAlgorithms();
     }
 
-    //TODO add snanity check for algorithms before loading
+    private void writeAlgoPath() throws IOException {
+        List<String> classNames = scanAlgorithmClasses();
+        Path serviceFile = buildServiceFile();
+        appendMissingEntries(serviceFile, classNames);
+    }
+
+    private List<String> scanAlgorithmClasses() throws IOException {
+        List<String> classNames = new ArrayList<>();
+        String[] classPathEntries = System.getProperty("java.class.path").split(File.pathSeparator);
+
+        for (String entry : classPathEntries) {
+            File f = new File(entry);
+            if (f.isDirectory()) {
+                scanDirectory(f, classNames);
+            } else if (entry.endsWith(".jar")) {
+                scanJar(f, classNames);
+            }
+        }
+        return classNames;
+    }
+
+    private void scanDirectory(File classesRoot, List<String> result) {
+        File pkgDir = new File(classesRoot, ALGORITHM_PKG_PATH);
+        if (!pkgDir.isDirectory()) return;
+
+        File[] files = pkgDir.listFiles((dir, name) -> name.endsWith(".class"));
+        if (files == null) return;
+
+        for (File f : files) {
+            String simpleName = f.getName().replace(".class", "");
+            result.add(ALGORITHM_PKG + "." + simpleName);
+        }
+    }
+
+    private void scanJar(File jarFile, List<String> result) throws IOException {
+        try (JarFile jar = new JarFile(jarFile)) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                String name = entries.nextElement().getName();
+                if (name.startsWith(ALGORITHM_PKG_PATH + "/") && name.endsWith(".class")) {
+                    String className = name.replace('/', '.').replace(".class", "");
+                    result.add(className);
+                }
+            }
+        }
+    }
+
+    private Path buildServiceFile() throws IOException {
+        Path servicesDir = resolveServicesDir();
+        Files.createDirectories(servicesDir);
+
+        Path serviceFile = servicesDir.resolve(FILE_NAME);
+        Files.deleteIfExists(serviceFile);
+        Files.createFile(serviceFile);
+        return serviceFile;
+    }
+
+    private Path resolveServicesDir() throws IOException {
+        URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+        try {
+            Path root = Path.of(location.toURI());
+            if (root.toString().endsWith(".jar")) {
+                root = root.getParent();
+            }
+            return root.resolve(SERVICES_DIR);
+        } catch (URISyntaxException e) {
+            throw new IOException("Cannot resolve services directory from location: " + location, e);
+        }
+    }
+
+    private void appendMissingEntries(Path serviceFile, List<String> classNames) throws IOException {
+        String existing = Files.readString(serviceFile);
+        StringBuilder toAppend = new StringBuilder();
+
+        for (String name : classNames) {
+            String line = name + "\n";
+            if (!existing.contains(line)) {
+                toAppend.append(line);
+            }
+        }
+
+        if (!toAppend.isEmpty()) {
+            try (FileWriter fw = new FileWriter(serviceFile.toFile(), true)) {
+                fw.write(toAppend.toString());
+            }
+        }
+    }
+
     private void loadAlgorithms() throws IOException {
         String[] classPathEntries = System.getProperty("java.class.path").split(File.pathSeparator);
         java.net.URL[] urls = new java.net.URL[classPathEntries.length];
@@ -29,62 +119,14 @@ public class AlgorithmRegistry {
             urls[i] = new File(classPathEntries[i]).toURI().toURL();
         }
 
-        // Use the current classloader as parent so IPathAlgorithm is the same
-        // loaded class in both the parent and child — avoids "not a subtype" error
-        ClassLoader freshLoader = new java.net.URLClassLoader(urls, this.getClass().getClassLoader());
-
+        ClassLoader freshLoader = new java.net.URLClassLoader(urls, getClass().getClassLoader());
         ServiceLoader<IPathAlgorithm> loader = ServiceLoader.load(IPathAlgorithm.class, freshLoader);
+
         for (IPathAlgorithm algorithm : loader) {
             if (chAlgorithms.containsKey(algorithm.getId())) {
                 throw new AlgorithmRegistryException(AlgorithmRegistryExceptionType.DUPLICATE_IDENTIFIER);
             }
             chAlgorithms.put(algorithm.getId(), algorithm);
-        }
-    }
-
-    //FIXME change src/main/java hardCoded path it fails once compiled
-    private static void writeAlgoPath() throws IOException {
-
-        // File prep
-        File file = new File(WRITING_DIC, FILE_NAME);
-        try {
-            File dir = new File(WRITING_DIC);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            if (file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Algo file name parsing
-        ArrayList<String> algoNames = new ArrayList<>();
-        try {
-            DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(SCANNING_DIC));
-            for (Path path : ds) {
-                File f = path.toFile();
-                String[] fileName = f.getName().split("\\.");
-                algoNames.add(PATH_DIC + fileName[0] + "\n");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // File scanning and additions
-        String content = Files.readString(Path.of(WRITING_DIC + FILE_NAME));
-        StringBuilder toAppend = new StringBuilder();
-        for (String name : algoNames) {
-            if (!content.contains(name)) {
-                toAppend.append(name);  // collect all missing names first
-            }
-        }
-        if (!toAppend.isEmpty()) {
-            try (FileWriter fw = new FileWriter(WRITING_DIC + FILE_NAME, true)) { // true = append mode
-                fw.write(toAppend.toString());
-            }
         }
     }
 
